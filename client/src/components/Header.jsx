@@ -21,13 +21,8 @@ const Header = () => {
         }
     }, [location]);
 
-    const handleLogin = async () => {
-        try {
-            await loginWithGoogle();
-        } catch (error) {
-            console.error("Login failed", error);
-            alert(`Login failed: ${error.message}`);
-        }
+    const handleLogin = () => {
+        navigate('/login');
     };
 
     const handleSearch = (e) => {
@@ -81,16 +76,32 @@ const Header = () => {
                     <div className="hidden lg:flex items-center bg-white rounded-md px-3 py-1 gap-2 h-10 shadow-sm min-w-[180px] cursor-pointer hover:bg-gray-50 transition-colors">
                         <MapPin size={20} className="text-black" />
                         <div className="flex flex-col leading-none justify-center">
-                            <span className="text-[10px] text-gray-500">Delivering to XXXXXXXXXX</span>
+                            <span className="text-[10px] text-gray-500">Delivering to {user?.address?.pincode || 'Select Location'}</span>
                             <span className="text-xs font-bold text-gray-800">{locationName}</span>
                         </div>
                     </div>
 
+                    {/* Dashboard Link for Producers */}
+                    {user && user.role === 'producer' && (
+                        <Link to="/producer/dashboard" className="bg-white text-[#558B2F] px-4 py-2 rounded-md font-bold text-sm shadow-sm hover:bg-gray-100 transition-colors">
+                            Dashboard
+                        </Link>
+                    )}
+
                     {/* Login Button */}
                     {user ? (
                         <div className="flex items-center gap-2 bg-white rounded-md p-1 pr-3 h-10 shadow-sm cursor-pointer hover:bg-gray-50" onClick={logout}>
-                            <img src={user.photoURL} alt="User" className="w-8 h-8 rounded-md" />
-                            <span className="font-bold text-sm text-gray-800">Logout</span>
+                            {user.photoURL ? (
+                                <img src={user.photoURL} alt="User" className="w-8 h-8 rounded-md" />
+                            ) : (
+                                <div className="w-8 h-8 rounded-md bg-gray-200 flex items-center justify-center font-bold text-[#558B2F]">
+                                    {user.firstName ? user.firstName[0] : 'U'}
+                                </div>
+                            )}
+                            <div className="flex flex-col leading-none">
+                                <span className="font-bold text-sm text-gray-800">{user.firstName || user.displayName || 'User'}</span>
+                                <span className="text-[10px] text-gray-500">Logout</span>
+                            </div>
                         </div>
                     ) : (
                         <button
