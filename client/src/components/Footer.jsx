@@ -1,5 +1,6 @@
 import React from 'react';
 import { Apple, Store, Facebook, Twitter, Instagram, Linkedin } from 'lucide-react';
+import HarvestHubLogo from '../assets/images/Harvest_Hub.png';
 
 const Footer = () => {
     return (
@@ -7,16 +8,7 @@ const Footer = () => {
             <div className="container mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
                 {/* Logo & Apps */}
                 <div className="flex flex-col gap-6">
-                    <div className="text-white font-black text-4xl tracking-tighter flex items-center">
-                        <span className="text-5xl">H</span>
-                        <span className="text-sm flex flex-col -ml-1 leading-none">
-                            <span>ARVEST</span>
-                        </span>
-                        <span className="text-5xl ml-1">H</span>
-                        <span className="text-sm flex flex-col -ml-1 leading-none">
-                            <span>UB</span>
-                        </span>
-                    </div>
+                    <img src={HarvestHubLogo} alt="Harvest Hub Logo" className="w-32 h-32 object-contain" />
 
                     <div className="flex flex-col gap-2">
                         <button className="bg-white text-black rounded px-4 py-2 flex items-center gap-2 w-40">

@@ -1,8 +1,10 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 import React, { useState, useEffect } from 'react';
 import { Search, MapPin, Menu, ChevronDown } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import useGeoLocation from '../hooks/useGeoLocation';
+import HarvestLogo from '../assets/images/Harvest_Hub.png';
 
 const Header = () => {
     const { user, loginWithGoogle, logout } = useAuth();
@@ -43,16 +45,7 @@ const Header = () => {
             <div className="bg-[#558B2F] px-4 md:px-6 py-3 flex items-center justify-between gap-4 h-16 shadow-md">
                 {/* Logo */}
                 <Link to="/" className="flex items-end gap-0.5 text-white shrink-0 group">
-                    <div className="bg-[#558B2F] border-2 border-white/20 p-1 rounded flex items-end">
-                        <div className="text-4xl font-black leading-none tracking-tighter">H</div>
-                        <div className="flex flex-col justify-end pb-1">
-                            <span className="text-[10px] font-bold tracking-widest leading-none mb-0.5 uppercase">arvest</span>
-                        </div>
-                        <div className="text-4xl font-black leading-none tracking-tighter ml-0.5">H</div>
-                        <div className="flex flex-col justify-end pb-1">
-                            <span className="text-[10px] font-bold tracking-widest leading-none mb-0.5 uppercase">ub</span>
-                        </div>
-                    </div>
+                <img src={HarvestLogo} alt="EcoShop Logo" className="w-40 h-40 object-contain" />
                 </Link>
 
                 {/* Search Bar */}
