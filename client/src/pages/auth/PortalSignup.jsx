@@ -2,8 +2,11 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
+import { useAuth } from '../../context/AuthContext';
+
 const PortalSignup = () => {
     const navigate = useNavigate();
+    const { register } = useAuth();
     const [step, setStep] = useState(1);
     const [formData, setFormData] = useState({
         firstName: '',
@@ -95,7 +98,12 @@ const PortalSignup = () => {
         }
     };
 
-    const handleSubmit = async () => {
+    const handleRoleSelect = (selectedRole) => {
+        setFormData({ ...formData, role: selectedRole });
+        handleSubmit(selectedRole);
+    };
+
+    const handleSubmit = async (roleOverride) => {
         if (!formData.firstName || !formData.lastName || !formData.email || !formData.password || !formData.userId || !formData.dob) {
             alert("Please fill in all required fields in Step 1.");
             setStep(1);
@@ -106,6 +114,11 @@ const PortalSignup = () => {
             // Final registration logic
             // For now, we assume OTP is verified
             const { otp, ...dataToSend } = formData;
+
+            // Use the override if provided (for immediate submission)
+            if (roleOverride) {
+                dataToSend.role = roleOverride;
+            }
 
             // Let's add a step 5 for Role Selection if we are at step 4 (OTP)
             if (step === 4) {
@@ -123,7 +136,7 @@ const PortalSignup = () => {
 
             const { data } = await axios.post('/api/auth/register', dataToSend, config);
 
-            localStorage.setItem('userInfo', JSON.stringify(data));
+            register(data);
 
             if (data.role === 'producer') {
                 navigate('/producer/dashboard');
@@ -332,14 +345,14 @@ const PortalSignup = () => {
                             <div className="space-y-4">
                                 <button
                                     type="button"
-                                    onClick={() => { setFormData({ ...formData, role: 'producer' }); setTimeout(handleSubmit, 100); }}
+                                    onClick={() => handleRoleSelect('producer')}
                                     className={`w-full p-4 rounded shadow-md font-bold text-lg transition ${formData.role === 'producer' ? 'bg-[#558B2F] text-white' : 'bg-white text-gray-800 hover:bg-gray-100'}`}
                                 >
                                     Producer (Farmer)
                                 </button>
                                 <button
                                     type="button"
-                                    onClick={() => { setFormData({ ...formData, role: 'consumer' }); setTimeout(handleSubmit, 100); }}
+                                    onClick={() => handleRoleSelect('consumer')}
                                     className={`w-full p-4 rounded shadow-md font-bold text-lg transition ${formData.role === 'consumer' ? 'bg-[#558B2F] text-white' : 'bg-white text-gray-800 hover:bg-gray-100'}`}
                                 >
                                     Consumer (Buyer)

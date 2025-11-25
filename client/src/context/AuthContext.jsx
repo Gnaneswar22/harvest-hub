@@ -16,30 +16,48 @@ export const AuthProvider = ({ children }) => {
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-            setUser(currentUser);
+            if (currentUser) {
+                setUser(currentUser);
+            } else {
+                // Check local storage for custom auth
+                const storedUser = localStorage.getItem('userInfo');
+                if (storedUser) {
+                    setUser(JSON.parse(storedUser));
+                } else {
+                    setUser(null);
+                }
+            }
             setLoading(false);
         });
         return () => unsubscribe();
     }, []);
 
-    const loginWithGoogle = () => {
-        return signInWithPopup(auth, googleProvider);
+    const loginWithGoogle = async () => {
+        const result = await signInWithPopup(auth, googleProvider);
+        // You might want to save this to your backend here too
+        return result;
     };
 
-    const loginWithEmail = (email, password) => {
-        return signInWithEmailAndPassword(auth, email, password);
+    // Custom Backend Login
+    const login = (userData) => {
+        localStorage.setItem('userInfo', JSON.stringify(userData));
+        setUser(userData);
     };
 
-    const registerWithEmail = (email, password) => {
-        return createUserWithEmailAndPassword(auth, email, password);
+    // Custom Backend Register
+    const register = (userData) => {
+        localStorage.setItem('userInfo', JSON.stringify(userData));
+        setUser(userData);
     };
 
-    const logout = () => {
-        return signOut(auth);
+    const logout = async () => {
+        localStorage.removeItem('userInfo');
+        await signOut(auth);
+        setUser(null);
     };
 
     return (
-        <AuthContext.Provider value={{ user, loginWithGoogle, loginWithEmail, registerWithEmail, logout, loading }}>
+        <AuthContext.Provider value={{ user, loginWithGoogle, login, register, logout, loading }}>
             {!loading && children}
         </AuthContext.Provider>
     );
