@@ -4,7 +4,7 @@ import { AuthProvider } from './context/AuthContext';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Login from './pages/auth/Login';
-import Register from './pages/auth/Register';
+import PortalSignup from './pages/auth/PortalSignup';
 import RoleSelect from './pages/auth/RoleSelect';
 import Dashboard from './pages/farmer/Dashboard';
 import AddCrop from './pages/farmer/AddCrop';
@@ -23,9 +23,11 @@ function App() {
             <Routes>
               <Route path="/" element={<MarketFeed />} />
               <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
+              <Route path="/register" element={<PortalSignup />} />
+              <Route path="/portal/signup" element={<PortalSignup />} />
               <Route path="/role-select" element={<RoleSelect />} />
               <Route path="/farmer/dashboard" element={<Dashboard />} />
+              <Route path="/producer/dashboard" element={<Dashboard />} />
               <Route path="/farmer/add-crop" element={<AddCrop />} />
               <Route path="/buyer/market" element={<MarketFeed />} />
               <Route path="/category/:category" element={<CategoryPage />} />

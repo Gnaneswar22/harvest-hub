@@ -12,7 +12,8 @@ const authUser = async (req, res) => {
     if (user && (await user.matchPassword(password))) {
         res.json({
             _id: user._id,
-            name: user.name,
+            firstName: user.firstName,
+            lastName: user.lastName,
             email: user.email,
             role: user.role,
             token: generateToken(user._id),
@@ -26,7 +27,7 @@ const authUser = async (req, res) => {
 // @route   POST /api/auth/register
 // @access  Public
 const registerUser = async (req, res) => {
-    const { name, email, password, role } = req.body;
+    const { firstName, lastName, userId, dob, email, password, address, mobile, role, consumerType } = req.body;
 
     const userExists = await User.findOne({ email });
 
@@ -35,24 +36,83 @@ const registerUser = async (req, res) => {
         return;
     }
 
-    const user = await User.create({
-        name,
-        email,
-        password,
-        role,
-    });
-
-    if (user) {
-        res.status(201).json({
-            _id: user._id,
-            name: user.name,
-            email: user.email,
-            role: user.role,
-            token: generateToken(user._id),
+    try {
+        const user = await User.create({
+            firstName,
+            lastName,
+            userId,
+            dob,
+            email,
+            password,
+            address,
+            mobile,
+            role,
+            consumerType
         });
-    } else {
-        res.status(400).json({ message: 'Invalid user data' });
+
+        if (user) {
+            res.status(201).json({
+                _id: user._id,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                email: user.email,
+                role: user.role,
+                token: generateToken(user._id),
+            });
+        } else {
+            res.status(400).json({ message: 'Invalid user data' });
+        }
+    } catch (error) {
+        res.status(400).json({ message: error.message });
     }
 };
 
-module.exports = { authUser, registerUser };
+const Otp = require('../models/Otp');
+
+// @desc    Send OTP
+// @route   POST /api/auth/send-otp
+// @access  Public
+const sendOtp = async (req, res) => {
+    const { mobile } = req.body;
+
+    if (!mobile) {
+        res.status(400).json({ message: 'Mobile number is required' });
+        return;
+    }
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+    // Delete existing OTP for this mobile
+    await Otp.deleteMany({ mobile });
+
+    await Otp.create({
+        mobile,
+        otp,
+    });
+
+    console.log(`OTP for ${mobile}: ${otp}`); // Log to console for dev
+
+    res.status(200).json({ message: 'OTP sent successfully' });
+};
+
+// @desc    Verify OTP
+// @route   POST /api/auth/verify-otp
+// @access  Public
+const verifyOtp = async (req, res) => {
+    const { mobile, otp } = req.body;
+
+    if (!mobile || !otp) {
+        res.status(400).json({ message: 'Mobile and OTP are required' });
+        return;
+    }
+
+    const otpRecord = await Otp.findOne({ mobile, otp });
+
+    if (otpRecord) {
+        res.status(200).json({ message: 'OTP verified successfully' });
+    } else {
+        res.status(400).json({ message: 'Invalid OTP' });
+    }
+};
+
+module.exports = { authUser, registerUser, sendOtp, verifyOtp };

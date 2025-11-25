@@ -32,7 +32,17 @@ const CategoryCard = ({ title, linkText, items, linkUrl, rotation }) => (
 );
 
 const MarketFeed = () => {
-    const { user, loginWithGoogle } = useAuth();
+    const { user: firebaseUser, loginWithGoogle } = useAuth();
+    const [localUser, setLocalUser] = React.useState(null);
+
+    React.useEffect(() => {
+        const storedUser = localStorage.getItem('userInfo');
+        if (storedUser) {
+            setLocalUser(JSON.parse(storedUser));
+        }
+    }, []);
+
+    const user = firebaseUser || localUser;
 
     const categories = [
         {
@@ -87,6 +97,21 @@ const MarketFeed = () => {
         }
     ];
 
+    const [products, setProducts] = React.useState([]);
+
+    React.useEffect(() => {
+        const fetchProducts = async () => {
+            try {
+                const response = await fetch('/api/products');
+                const data = await response.json();
+                setProducts(data);
+            } catch (error) {
+                console.error('Error fetching products:', error);
+            }
+        };
+        fetchProducts();
+    }, []);
+
     return (
         <div className="bg-[#558B2F] min-h-screen pb-12 font-sans">
             <div className="container mx-auto px-4 py-8 max-w-7xl">
@@ -97,12 +122,28 @@ const MarketFeed = () => {
                     ))}
                 </div>
 
+                {/* Fresh Arrivals Section */}
+                <h2 className="text-3xl text-white/90 font-medium mb-6 pl-2">Fresh Arrivals</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 px-4 mb-12">
+                    {products.slice(0, 8).map((product) => (
+                        <Link to={`/product/${product._id}`} key={product._id} className="bg-white p-4 rounded shadow-lg hover:scale-105 transition-transform">
+                            <img src={product.image || 'https://via.placeholder.com/200'} alt={product.name} className="w-full h-48 object-cover mb-4 rounded" />
+                            <h3 className="font-bold text-lg text-gray-800">{product.name}</h3>
+                            <p className="text-sm text-gray-600 mb-2">{product.category}</p>
+                            <div className="flex justify-between items-center">
+                                <span className="font-bold text-green-700 text-xl">₹{product.price}</span>
+                                <span className="text-xs text-gray-500">{product.quantity} units left</span>
+                            </div>
+                        </Link>
+                    ))}
+                </div>
+
                 {/* Your Orders Section */}
                 <h2 className="text-3xl text-white/90 font-medium mb-6 pl-2">Your orders</h2>
 
                 {user ? (
                     <div className="bg-white mx-2 shadow-2xl p-12 flex flex-col items-center justify-center text-center min-h-[300px]">
-                        <h3 className="text-2xl font-bold mb-2 text-gray-800">Welcome back, {user.displayName}!</h3>
+                        <h3 className="text-2xl font-bold mb-2 text-gray-800">Welcome back, {user.displayName || user.firstName}!</h3>
                         <p className="text-gray-600 mb-6">You have no active orders right now.</p>
                         <button className="bg-[#558B2F] text-white px-8 py-3 rounded font-bold hover:bg-[#457025] transition-colors shadow-md">
                             Start Shopping
@@ -115,7 +156,7 @@ const MarketFeed = () => {
                         </div>
                         <h3 className="text-4xl font-medium mb-3 text-black tracking-tight">Login to view your orders</h3>
                         <p className="text-black text-lg">
-                            New customer? <button onClick={loginWithGoogle} className="text-blue-700 hover:underline font-bold">Signin</button>
+                            New customer? <Link to="/portal/signup" className="text-blue-700 hover:underline font-bold">Signin</Link>
                         </p>
                     </div>
                 )}
