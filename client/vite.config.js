@@ -30,6 +30,8 @@ export default defineConfig({
     })
   ],
   server: {
+    host: true, // Expose to network
+    port: 5173,
     proxy: {
       '/api': {
         target: process.env.VITE_API_URL || 'http://localhost:5000',
