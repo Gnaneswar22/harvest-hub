@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import axios from 'axios';
+import api from '../../utils/api';
 import { useAuth } from '../../context/AuthContext';
 
 const Login = () => {
@@ -19,7 +19,7 @@ const Login = () => {
                 },
             };
 
-            const { data } = await axios.post('/api/auth/login', { email, password }, config);
+            const { data } = await api.post('/api/auth/login', { email, password }, config);
 
             login(data);
 

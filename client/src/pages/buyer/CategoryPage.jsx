@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import axios from 'axios';
+import api from '../../utils/api';
 
 const CategoryPage = () => {
     const { category } = useParams();
@@ -13,8 +13,8 @@ const CategoryPage = () => {
                 setLoading(true);
                 // Fetch local and external products in parallel
                 const [localResponse, externalResponse] = await Promise.all([
-                    axios.get('/api/products'),
-                    axios.get(`/api/external/${category}`)
+                    api.get('/api/products'),
+                    api.get(`/api/external/${category}`)
                 ]);
 
                 // Filter local products

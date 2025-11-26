@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../../utils/api';
 
 const Dashboard = () => {
     const [products, setProducts] = useState([]);
@@ -22,7 +22,7 @@ const Dashboard = () => {
 
     const fetchProducts = async () => {
         try {
-            const { data } = await axios.get('/api/products');
+            const { data } = await api.get('/api/products');
             // Filter products for this user (assuming API returns all)
             // Ideally backend should handle this filtering
             const user = JSON.parse(localStorage.getItem('userInfo'));
@@ -49,7 +49,7 @@ const Dashboard = () => {
                     Authorization: `Bearer ${userInfo.token}`,
                 },
             };
-            await axios.post('/api/products', formData, config);
+            await api.post('/api/products', formData, config);
             alert('Harvest Uploaded Successfully!');
             setFormData({
                 name: '',

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../../utils/api';
 
 import { useAuth } from '../../context/AuthContext';
 
@@ -55,7 +55,7 @@ const PortalSignup = () => {
                 return;
             }
             try {
-                await axios.post('/api/auth/send-otp', { mobile: formData.mobile });
+                await api.post('/api/auth/send-otp', { mobile: formData.mobile });
                 // If success, proceed
             } catch (error) {
                 console.error(error);
@@ -78,7 +78,7 @@ const PortalSignup = () => {
 
     const handleVerifyOtp = async () => {
         try {
-            await axios.post('/api/auth/verify-otp', { mobile: formData.mobile, otp: formData.otp });
+            await api.post('/api/auth/verify-otp', { mobile: formData.mobile, otp: formData.otp });
             setIsOtpVerified(true);
             alert("OTP Verified!");
         } catch (error) {
@@ -90,7 +90,7 @@ const PortalSignup = () => {
 
     const handleResendOtp = async () => {
         try {
-            await axios.post('/api/auth/send-otp', { mobile: formData.mobile });
+            await api.post('/api/auth/send-otp', { mobile: formData.mobile });
             alert("OTP Resent!");
         } catch (error) {
             console.error(error);
@@ -134,7 +134,7 @@ const PortalSignup = () => {
                 },
             };
 
-            const { data } = await axios.post('/api/auth/register', dataToSend, config);
+            const { data } = await api.post('/api/auth/register', dataToSend, config);
 
             register(data);
 
