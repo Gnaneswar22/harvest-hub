@@ -14,7 +14,14 @@ const app = express();
 
 // Middleware
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin: [
+    'http://localhost:5173',
+    'http://localhost:3000',
+    process.env.FRONTEND_URL || 'https://harvest-hub-frontend.onrender.com'
+  ],
+  credentials: true
+}));
 
 // Route files
 const authRoutes = require('./routes/authRoutes');
